@@ -1,0 +1,52 @@
+.productform {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #a892ee;
+    padding: 1rem;
+    margin: 2rem auto;
+    width: 50rem;
+    max-width: 95%;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+.productform-controls {
+    display:inline-flex; /* Change display property to grid */
+    gap: 3rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.productform-control label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.productform-control input {
+    font: inherit;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%; /* Full width */
+    max-width: 100%;
+}
+
+.productform-control select {
+    font: inherit;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 10rem; /* Full width */
+    max-width: 100%;
+}
+
+.productform-actions {
+    text-align: center; 
+    margin-top: 1rem;   
+}
+.invalid{
+    background-color: rgb(243, 169, 148);
+}
