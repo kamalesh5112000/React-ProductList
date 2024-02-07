@@ -1,4 +1,4 @@
-import React,{useReducer,useRef, useState} from 'react';
+import React,{useEffect, useReducer,useRef, useState} from 'react';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import './ProductFrom.css';
@@ -30,6 +30,19 @@ const productNameReducer=(state,action)=>{
     return {value:'',isValid:false}
 }
 
+const productPriceReducer=(state,action)=>{
+    if(action.type==='USER_INPUT'){
+        return {value:action.value,isValid:+action.value.trim()>0}
+    }
+    if(action.type==='INPUT_BLUR'){
+        return {value:state.value,isValid:+state.value.trim()>0}
+    }
+    if(action.type==='NEW_FORM'){
+        return {value:'',isValid:null}
+    }
+    return {value:'',isValid:false}
+}
+
 const ProductForm=(props)=>{
 
     const [enteredCateg, setEnteredCateg]=useState('1');
@@ -39,7 +52,21 @@ const ProductForm=(props)=>{
 
     const [productIdState,dispatchProductID]=useReducer(productIdReducer,{value:'',isValid:null})
     const [productNameState,dispatchProductName]=useReducer(productNameReducer,{value:'',isValid:null})
-    // const [productPriceState,dispatchProductPrice]=useReducer(productPriceReducer,{value:'',isValid:false})
+    const [productPriceState,dispatchProductPrice]=useReducer(productPriceReducer,{value:'',isValid:null})
+
+    const [buttonIsValid,setButtonIsValid]=useState(false);
+
+    useEffect(()=>{
+
+        const buttonValidationTimer=setTimeout(()=>{
+            setButtonIsValid(productIdState.isValid && productNameState.isValid && productPriceState.isValid)
+        },500);
+
+        return ()=>{
+            clearTimeout(buttonValidationTimer)
+        }
+
+    },[productIdState,productNameState,productPriceState]);
 
 
     const productIdChangeHandler= () =>{
@@ -58,6 +85,14 @@ const ProductForm=(props)=>{
         dispatchProductName({type:'INPUT_BLUR'})
     }
 
+    const productPriceChangeHandler= () =>{
+        dispatchProductPrice({type:'USER_INPUT',value:productPriceInputRef.current.value});
+
+    }
+    const validateProductPriceHandler=()=>{
+        dispatchProductPrice({type:'INPUT_BLUR'})
+    }
+
     const categoryChangeHandler=(e)=>{
         setEnteredCateg(e.target.value)
 
@@ -65,13 +100,13 @@ const ProductForm=(props)=>{
 
     const submitHandler=e=>{
         e.preventDefault();
-        console.log(productNameState.value)
-        props.onAddProduct(productIdState.value,productNameState.value,productPriceInputRef.current.value);
+        props.onAddProduct(productIdState.value,productNameState.value,productPriceState.value,enteredCateg);
         productIdInputRef.current.value='';
         dispatchProductID({type:'NEW_FORM'})
         productNameInputRef.current.value='';
         dispatchProductName({type:'NEW_FORM'})
         productPriceInputRef.current.value='';
+        dispatchProductPrice({type:'NEW_FORM'})
     }
 
 
@@ -92,7 +127,7 @@ const ProductForm=(props)=>{
                         </div>
                         <div className='productform-control'>
                             <label>Price</label>
-                            <input type="number" ref={productPriceInputRef}/>
+                            <input type="number" ref={productPriceInputRef} onChange={productPriceChangeHandler} className={productPriceState.isValid===false? 'invalid' : ''} onBlur={validateProductPriceHandler} />
                             
                         </div>
                         <div className='productform-control'>
@@ -101,12 +136,12 @@ const ProductForm=(props)=>{
                                 <option value='1'>Food</option>
                                 <option value='2'>Skin Care</option>
                                 <option value='3'>Electronics</option>
-                                <option value='5'>Toys</option>
+                                <option value='4'>Toys</option>
                             </select>
                         </div>
                     </div>
 
-                    <Button type='submit' className={'button'}>Add Product</Button>
+                    <Button type='submit' className={'button'} disabled={!buttonIsValid}>Add Product</Button>
 
                 </div>
             </form>
